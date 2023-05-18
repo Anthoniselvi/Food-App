@@ -1,10 +1,24 @@
 import styles from "@/styles/Cart.module.css";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  PayPalScriptProvider,
+  PayPalButtons,
+  usePayPalScriptReducer,
+} from "@paypal/react-paypal-js";
+import { useState } from "react";
 
 const Cart = () => {
+  const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
+  const amount = "2";
+  const currency = "USD";
+  const style = { layout: "vertical" };
+
+  // Custom component to wrap the PayPalButtons and handle currency changes
+  const ButtonWrapper = ({ currency, showSpinner }) => {};
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -72,7 +86,31 @@ const Cart = () => {
             <b className={styles.totalTextTitle}>Total:</b>
             {cart.total}
           </div>
-          <button className={styles.button}>CHECKOUT NOW!</button>
+          {open ? (
+            <div className={styles.paymentMethods}>
+              <button
+                className={styles.payButton}
+                onClick={() => setCash(true)}
+              >
+                CASH ON DELIVERY
+              </button>
+              <PayPalScriptProvider
+                options={{
+                  "client-id":
+                    "Aaa3YNF2mQ5Pj37X1mYTee_SQcEDXtwIs8VRU6GqUdOLI2_fFdu2s0XDXDuCt0d32mz22A_JMPp5RDvD",
+                  components: "buttons",
+
+                  currency: "USD",
+                }}
+              >
+                <ButtonWrapper currency={currency} showSpinner={false} />
+              </PayPalScriptProvider>
+            </div>
+          ) : (
+            <button onClick={() => setOpen(true)} className={styles.button}>
+              CHECKOUT NOW!
+            </button>
+          )}
         </div>
       </div>
     </div>
