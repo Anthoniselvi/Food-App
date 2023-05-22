@@ -1,5 +1,14 @@
 import cookie from "cookie";
+import dotenv from "dotenv";
+import crypto from "crypto";
 
+dotenv.config(); // Load environment variables from .env file
+
+const generateToken = () => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
+console.log("genereate Token : " + generateToken());
 const handler = (req, res) => {
   if (req.method === "POST") {
     const { username, password } = req.body;
@@ -7,6 +16,7 @@ const handler = (req, res) => {
       username === process.env.ADMIN_USERNAME &&
       password === process.env.ADMIN_PASSWORD
     ) {
+      const token = generateToken(); // Generate the token
       res.setHeader(
         "Set-Cookie",
         cookie.serialize("token", process.env.TOKEN, {
@@ -15,7 +25,7 @@ const handler = (req, res) => {
           path: "/",
         })
       );
-      res.status(200).json("Succesfull");
+      res.status(200).json("Successful");
     } else {
       res.status(400).json("Wrong Credentials!");
     }
